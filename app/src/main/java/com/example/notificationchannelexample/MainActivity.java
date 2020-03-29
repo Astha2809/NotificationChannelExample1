@@ -13,8 +13,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import static com.example.notificationchannelexample.BaseApplication.CHANNEL_1_ID;
-import static com.example.notificationchannelexample.BaseApplication.CHANNEL_2_ID;
+
+import static com.example.notificationchannelexample.BaseApplication.SILENT_CHANNEL;
+import static com.example.notificationchannelexample.BaseApplication.SOUND_CHHANNEL;
 
 public class MainActivity extends AppCompatActivity {
     private NotificationManagerCompat notificationManagerCompat;
@@ -24,6 +25,8 @@ public class MainActivity extends AppCompatActivity {
     private EditText edit_text_title;
     private EditText edit_text_heading;
     AlarmManager alarmManager;
+    private String title;
+    private String message;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         button_channel1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                b1();
+                GenerateAlarm();
 
 
             }
@@ -49,15 +52,21 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void b1() {
-        String title = edit_text_title.getText().toString();
-        String message = edit_text_heading.getText().toString();
+    private void GenerateAlarm() {
+        title = edit_text_title.getText().toString();
+        message = edit_text_heading.getText().toString();
         Intent intent = new Intent(this, BaseApplication.class);
-        PendingIntent pd = PendingIntent.getActivity(this, 1, intent, 0);
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * 10, pd);
+        PendingIntent pd = PendingIntent.getBroadcast(this, 1, intent, 0);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 6000, pd);
+
+        GenerateSilentNotification();
+        GenerateSoundNotification();
 
 
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_1_ID)
+    }
+
+    private void GenerateSilentNotification() {
+        Notification notification = new NotificationCompat.Builder(this, SILENT_CHANNEL)
                 .setContentTitle(title)
                 .setContentText(message)
                 .setSmallIcon(R.drawable.ic_launcher_background)
@@ -67,15 +76,13 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         notificationManagerCompat.notify(1, notification);
-        // alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 1000 * 10, pd);
 
 
-//    private void b2() {e.printStackTrace();
-//        String title = edit_text_title.getText().toString();
-//        String message = edit_text_heading.getText().toString();
+    }
 
+    private void GenerateSoundNotification() {
 
-        Notification notification1 = new NotificationCompat.Builder(this, CHANNEL_2_ID)
+        Notification notification1 = new NotificationCompat.Builder(this, SOUND_CHHANNEL)
                 .setContentTitle(title)
                 .setContentText(message)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
@@ -83,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
                 .build();
 
         notificationManagerCompat.notify(2, notification1);
-
 
     }
 
